@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Sensitive files - cookie containing AnkiWeb session tokens
+json cookie.txt
+*cookie*.txt
+*cookie*.json
+
+# Logs
+*.log
+excalidraw.log
+
+# Protobuf generated (rebuild with protoc)
+# ankiweb_pb2.py  -- uncomment if you want to exclude generated file
+
+# Environment variables
+.env
+.env.local

@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AnkiWeb Super Lite</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #090d16; /* Deep OLED black */
+            color: #f8fafc;
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding: 0;
+        }
+
+        /* Highly Optimized App Window Wrapper (Flat Slate Styling) */
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            min-height: 100vh;
+            margin: 0 auto;
+            background: #090d16; /* Solid background - no gradients */
+            display: flex;
+            flex-direction: column;
+            overflow: visible;
+            position: relative;
+        }
+
+        /* Square screens optimization (BlackBerry Q10 / Classic / Passport - 720x720 physical pixels, ~360x360 CSS pixels) */
+        @media (max-aspect-ratio: 1.05/1) {
+            body {
+                padding: 0;
+                background-color: #090d16;
+            }
+            .app-container {
+                min-height: 100vh;
+            }
+            header {
+                padding: 8px 12px; /* Super compact header */
+            }
+            header h1 {
+                font-size: 14px;
+            }
+            .back-btn {
+                padding: 4px 8px;
+                font-size: 10px;
+                border-radius: 6px;
+            }
+            .screen {
+                padding: 8px; /* Tighter paddings */
+            }
+            .subtitle {
+                margin-bottom: 8px;
+                font-size: 10px;
+            }
+            .deck-list {
+                gap: 8px;
+            }
+            .deck-card {
+                padding: 9px 12px;
+                border-radius: 8px;
+            }
+            .deck-name {
+                font-size: 12px;
+            }
+            .badge {
+                min-width: 26px;
+                padding: 2px 4px;
+                font-size: 8px;
+                border-radius: 4px;
+            }
+            
+            /* Study screen compact parameters */
+            .study-status {
+                padding: 5px 8px;
+                margin-bottom: 8px;
+                font-size: 9px;
+                border-radius: 6px;
+            }
+            .card-view {
+                margin-bottom: 8px;
+            }
+            .qa-panel {
+                padding: 12px 10px;
+                min-height: 0;
+                border-radius: 8px;
+            }
+            .panel-label {
+                font-size: 8px;
+            }
+            .qa-text {
+                font-size: 13px;
+                line-height: 1.4;
+            }
+            .action-area {
+                gap: 6px;
+            }
+            .btn-reveal {
+                padding: 10px;
+                font-size: 12px;
+                border-radius: 8px;
+                border-bottom-width: 3px;
+            }
+            .btn-reveal:active, .btn-reveal.keycap-active {
+                transform: translateY(2px) !important;
+            }
+            .btn-score {
+                padding: 8px 2px;
+                font-size: 10px;
+                border-radius: 8px;
+                border-bottom-width: 2.5px;
+            }
+            .btn-score:active, .btn-score.keycap-active {
+                transform: translateY(2px) !important;
+            }
+            .btn-score span {
+                font-size: 7px;
+            }
+            .hotkeys-helper {
+                font-size: 7.5px;
+                margin-top: 1px;
+            }
+            
+            /* Loader overlay compact adjustments */
+            .loader-overlay p {
+                font-size: 11px;
+            }
+            .spinner {
+                width: 30px;
+                height: 30px;
+            }
+
+            /* ULTRA PRIMITIVE RAW CSS FOR BB10 STUDY DEBUGGING */
+            body.study-active header {
+                display: none !important;
+            }
+            body.study-active .app-container {
+                display: block !important;
+                background: black !important;
+                height: auto !important;
+                min-height: 100vh !important;
+                overflow: auto !important;
+            }
+            body.study-active .screen {
+                display: block !important;
+                padding: 10px !important;
+                height: auto !important;
+                overflow: visible !important;
+            }
+            body.study-active .study-status {
+                display: block !important;
+                margin-bottom: 10px !important;
+                font-size: 11px !important;
+                color: white !important;
+            }
+            body.study-active #active-deck-name {
+                display: block !important;
+                font-weight: bold !important;
+                color: #38bdf8 !important;
+            }
+            body.study-active .status-counts {
+                display: block !important;
+                margin-top: 4px !important;
+            }
+            body.study-active .card-view {
+                display: block !important;
+                margin-bottom: 10px !important;
+            }
+            body.study-active .qa-panel {
+                display: block !important;
+                position: static !important;
+                border: 1px solid white !important;
+                padding: 8px !important;
+                margin-bottom: 10px !important;
+                background: none !important;
+                min-height: auto !important;
+                text-align: left !important;
+            }
+            body.study-active .panel-label {
+                display: block !important;
+                position: static !important;
+                font-weight: bold !important;
+                font-size: 9px !important;
+                color: red !important;
+                margin-bottom: 4px !important;
+            }
+            body.study-active .panel-label-ans {
+                color: green !important;
+            }
+            body.study-active .qa-text {
+                display: block !important;
+                font-size: 12px !important;
+                color: white !important;
+                white-space: pre-wrap !important;
+                word-wrap: break-word !important;
+            }
+            body.study-active .action-area {
+                display: block !important;
+                margin-top: 15px !important;
+                clear: both !important;
+            }
+            body.study-active .btn-reveal {
+                display: block !important;
+                width: 100% !important;
+                padding: 10px !important;
+                background: white !important;
+                color: black !important;
+                border: 1px solid white !important;
+                font-size: 12px !important;
+                font-weight: bold !important;
+            }
+            /* Score block: Non-wrapping inline-blocks row */
+            body.study-active .score-grid {
+                display: block !important;
+                width: 100% !important;
+                white-space: normal !important;
+                overflow: visible !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            body.study-active .btn-score {
+                display: inline-block !important; /* Simple side-by-side elements */
+                width: 48% !important;
+                margin: 0 2% 6px 0 !important;
+                padding: 10px 0 !important;
+                text-align: center !important;
+                font-size: 10px !important;
+                color: white !important;
+                border: 1px solid white !important;
+                background: black !important;
+                box-sizing: border-box !important;
+                vertical-align: top !important;
+            }
+            body.study-active .btn-score:nth-child(2n) {
+                margin-right: 0 !important;
+            }
+            body.study-active .score-1 { background-color: #dc2626 !important; }
+            body.study-active .score-2 { background-color: #d97706 !important; }
+            body.study-active .score-3 { background-color: #2563eb !important; }
+            body.study-active .score-4 { background-color: #16a34a !important; }
+            
+            body.study-active .hotkeys-helper {
+                display: block !important;
+                margin-top: 10px !important;
+                font-size: 8px !important;
+                color: gray !important;
+                text-align: center !important;
+            }
+        }
+
+        /* Flat Top Header bar (No blurs/backdrop filters) */
+        header {
+            background: #131b2e; /* Flat slate background */
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: #38bdf8; /* Flat sky blue */
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #f8fafc;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            display: none;
+            transition: transform 0.1s;
+        }
+
+        .back-btn:active {
+            background: rgba(255, 255, 255, 0.12);
+            transform: scale(0.96);
+        }
+
+        /* Screen Scrollable Viewport (Momentum Enabled!) */
+        .screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch; /* ESSENTIAL: Hardware-accelerated kinetic scrolling for BB10 */
+            position: relative;
+            padding: 16px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* DECK LIST SCREEN */
+        .subtitle {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #38bdf8;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .deck-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .deck-card {
+            background: #131b2e; /* Flat slate deck cards */
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: border-color 0.1s, background-color 0.1s;
+        }
+
+        .deck-card:active, .deck-card.focused {
+            border-color: #38bdf8;
+            background: #1e293b;
+        }
+
+        .deck-info {
+            flex: 1;
+            padding-right: 12px;
+            overflow: hidden;
+        }
+
+        .deck-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #f8fafc;
+            white-space: pre-wrap;
+        }
+
+        /* Stats Row */
+        .deck-badges {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .badge {
+            min-width: 32px;
+            padding: 3px 6px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-align: center;
+            color: white;
+        }
+
+        .badge-new { background-color: #16a34a; }
+        .badge-learn { background-color: #d97706; }
+        .badge-review { background-color: #2563eb; }
+        .badge-empty { display: none; }
+
+        /* STUDY SESSION SCREEN */
+        .study-status {
+            background: #131b2e; /* Flat panel background */
+            border-radius: 10px;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            font-size: 11px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .status-counts {
+            display: flex;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .count-n { color: #4ade80; }
+        .count-l { color: #fbbf24; }
+        .count-r { color: #60a5fa; }
+
+        .card-view {
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .qa-panel {
+            background: #0d1321; /* Dark deep blue flat box */
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 14px 12px;
+            min-height: 0;
+            display: block;
+            text-align: left;
+            position: static;
+            margin-bottom: 10px;
+        }
+
+        .panel-label {
+            display: block;
+            position: static;
+            margin-bottom: 8px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        .panel-label-ans {
+            color: #38bdf8;
+        }
+
+        .qa-text {
+            font-size: 15px;
+            line-height: 1.5;
+            color: #f8fafc;
+            white-space: pre-wrap;
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+
+        /* Action Buttons */
+        .action-area {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-reveal {
+            background: #0284c7; /* Solid color */
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 4px solid #0369a1; /* 3D key look */
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.05s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-reveal:active, .btn-reveal.keycap-active {
+            transform: translateY(3px) !important;
+            border-bottom-width: 1px !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        .score-grid {
+            display: block;
+        }
+
+        .btn-score {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 10px 4px;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            display: inline-block;
+            width: 48%;
+            margin: 0 2% 8px 0;
+            text-align: center;
+            transition: all 0.05s ease-in-out;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+            vertical-align: top;
+        }
+
+        .btn-score span {
+            display: block;
+            margin-top: 4px;
+            font-size: 8px;
+            opacity: 0.6;
+        }
+
+        .btn-score:nth-child(2n) {
+            margin-right: 0;
+        }
+
+        .score-1 { background-color: #dc2626; border-bottom: 3.5px solid #991b1b; }
+        .score-2 { background-color: #d97706; border-bottom: 3.5px solid #92400e; }
+        .score-3 { background-color: #2563eb; border-bottom: 3.5px solid #1e40af; }
+        .score-4 { background-color: #16a34a; border-bottom: 3.5px solid #166534; }
+
+        .btn-score:active, .btn-score.keycap-active {
+            transform: translateY(2.5px) !important;
+            border-bottom-width: 1px !important;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        .hotkeys-helper {
+            font-size: 9px;
+            text-align: center;
+            color: #94a3b8;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* Flat Deep Loader Overlay (No blurs/backdrop filters) */
+        .loader-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #090d16; /* Solid dark background */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            gap: 16px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3.5px solid rgba(56, 189, 248, 0.1);
+            border-top-color: #38bdf8;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loader-overlay p {
+            font-size: 12px;
+            font-weight: 500;
+            color: #38bdf8;
+        }
+
+        /* Success End Session Screen */
+        .success-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .success-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(22, 163, 74, 0.1);
+            border: 2px solid #16a34a;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #16a34a;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .success-panel h2 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .success-panel p {
+            font-size: 13px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        .btn-standard {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #f8fafc;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s;
+            margin-top: 10px;
+        }
+
+        .btn-standard:active {
+            transform: scale(0.97);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Loader Panel -->
+        <div id="loader" class="loader-overlay">
+            <div class="spinner"></div>
+            <p id="loader-text">Đang kết nối AnkiWeb...</p>
+        </div>
+
+        <!-- Global Header Bar -->
+        <header>
+            <button id="back-btn" class="back-btn" onclick="backToDecks()">← Bộ Thẻ</button>
+            <h1 id="header-title">AnkiWeb Lite</h1>
+            <div style="width: 40px; display: inline-block;"></div> <!-- balance spacing -->
+        </header>
+
+        <!-- 1. DECK LIST VIEW -->
+        <div id="deck-screen" class="screen">
+            <div class="subtitle">Danh sách bộ thẻ</div>
+            <div id="decks-container" class="deck-list"></div>
+        </div>
+
+        <!-- 2. STUDY SESSION VIEW -->
+        <div id="study-screen" class="screen hidden">
+            <!-- Progress stats row -->
+            <div class="study-status">
+                <span id="active-deck-name" style="font-weight: 600; cursor: pointer; color: #38bdf8; text-decoration: underline;" onclick="backToDecks()">← Bộ Thẻ</span>
+                <div class="status-counts">
+                    <span id="c-new" class="count-n">New: 0</span>
+                    <span id="c-learn" class="count-l">Learn: 0</span>
+                    <span id="c-rev" class="count-r">Rev: 0</span>
+                </div>
+            </div>
+
+            <!-- Flashcard rendering -->
+            <div class="card-view">
+                <!-- Question -->
+                <div class="qa-panel">
+                    <span class="panel-label">Câu Hỏi</span>
+                    <p id="question-box" class="qa-text">Đang nạp...</p>
+                </div>
+
+                <!-- Answer (revealed conditionally) -->
+                <div id="answer-panel" class="qa-panel hidden">
+                    <span class="panel-label panel-label-ans">Đáp Án</span>
+                    <p id="answer-box" class="qa-text">Đang nạp...</p>
+                </div>
+            </div>
+
+            <!-- Study Action Area -->
+            <div class="action-area">
+                <!-- 1. Reveal trigger -->
+                <button id="reveal-btn" class="btn-reveal" onclick="revealAnswer()">Xem Đáp Án <span style="font-size:9px;opacity:0.75;display:block;margin-top:3px;">[ SPACE / ENTER ]</span></button>
+                
+                <!-- 2. Rate grids -->
+                <div id="score-block" class="score-grid hidden">
+                    <button id="btn-score-1" class="btn-score score-1" onclick="submitAnswer(1)">Again <span>[ Y / 1 ]</span></button>
+                    <button id="btn-score-2" class="btn-score score-2" onclick="submitAnswer(2)">Hard <span>[ U / 2 ]</span></button>
+                    <button id="btn-score-3" class="btn-score score-3" onclick="submitAnswer(3)">Good <span>[ I / 3 ]</span></button>
+                    <button id="btn-score-4" class="btn-score score-4" onclick="submitAnswer(4)">Easy <span>[ O / 4 ]</span></button>
+                </div>
+
+                <div class="hotkeys-helper">Bàn phím: SPACE/ENTER lật | Y-U-I-O chấm điểm | J/K hoặc D/F để cuộn</div>
+            </div>
+        </div>
+
+        <!-- 3. SUCCESS / END SESSION VIEW -->
+        <div id="success-screen" class="screen hidden">
+            <div class="success-panel">
+                <div class="success-icon">✓</div>
+                <h2>Chúc mừng!</h2>
+                <p>Bạn đã hoàn thành việc ôn tập bộ thẻ này cho thời điểm hiện tại.</p>
+                <button class="btn-standard" onclick="backToDecks()">Quay lại danh sách</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Core State Engine (pure ES5, no const/let)
+        var activeCard = null;
+        var isAnswerRevealed = false;
+        var currentScreen = 'deck'; // Tracks active screen: 'deck', 'study', 'success'
+        
+        // Vim Keyboard Focus States for Decks List
+        var currentDecks = [];
+        var deckCardElements = [];
+        var focusedDeckIndex = -1;
+
+        // Custom compatible AJAX helper (replaces Fetch API)
+        function ajax(url, method, data, successCb, errorCb) {
+            var xhr = new XMLHttpRequest();
+            xhr.open(method, url, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        try {
+                            var resp = JSON.parse(xhr.responseText);
+                            successCb(resp);
+                        } catch (e) {
+                            successCb(xhr.responseText);
+                        }
+                    } else {
+                        if (errorCb) {
+                            errorCb(xhr.status, xhr.responseText);
+                        }
+                    }
+                }
+            };
+            if (data) {
+                xhr.send(JSON.stringify(data));
+            } else {
+                xhr.send();
+            }
+        }
+
+        // Loader helper using standard ES5 innerHTML and compatible classes manipulation
+        function showLoader(text) {
+            document.getElementById('loader-text').innerHTML = text;
+            var loader = document.getElementById('loader');
+            loader.className = 'loader-overlay';
+        }
+
+        // Safe helper to hide loading panel
+        function hideLoader() {
+            var loader = document.getElementById('loader');
+            loader.className = 'loader-overlay hidden';
+        }
+
+        // Initialize lists using compatible window.onload
+        window.onload = function() {
+            loadDecks();
+        };
+
+        // Query API to load decks list
+        function loadDecks() {
+            showLoader("Đang tải danh sách bộ thẻ...");
+            ajax('/api/decks', 'GET', null, function(decks) {
+                renderDecks(decks);
+                hideLoader();
+            }, function(status, errText) {
+                hideLoader();
+                alert("Lỗi nạp bộ thẻ. Hãy chắc chắn rằng tệp 'json cookie.txt' đã được cấu hình đúng ở máy tính.");
+            });
+        }
+
+        // Render decks to list view using plain string concats and traditional loops (No ES6 backticks or Arrow functions!)
+        function renderDecks(decks) {
+            var container = document.getElementById('decks-container');
+            container.innerHTML = "";
+            
+            currentDecks = decks;
+            deckCardElements = [];
+            focusedDeckIndex = -1;
+
+            for (var i = 0; i < decks.length; i++) {
+                var deck = decks[i];
+                var card = document.createElement('div');
+                card.className = "deck-card";
+                
+                // Closure to correctly capture deckId and name
+                (function(dId, dName) {
+                    card.onclick = function() {
+                        selectDeck(dId, dName);
+                    };
+                })(deck.deck_id, deck.name);
+
+                // Indentation support for levels
+                var indent = "";
+                for (var j = 0; j < deck.level; j++) {
+                    indent += "&nbsp;&nbsp;&nbsp;&nbsp;";
+                }
+
+                var badgesHtml = "";
+                if (deck.new_count > 0) {
+                    badgesHtml += '<span class="badge badge-new">' + deck.new_count + '</span>';
+                }
+                if (deck.learn_count > 0) {
+                    badgesHtml += '<span class="badge badge-learn">' + deck.learn_count + '</span>';
+                }
+                if (deck.review_count > 0) {
+                    badgesHtml += '<span class="badge badge-review">' + deck.review_count + '</span>';
+                }
+
+                card.innerHTML = 
+                    '<div class="deck-info">' +
+                        '<div class="deck-name">' + indent + deck.name.trim() + '</div>' +
+                    '</div>' +
+                    '<div class="deck-badges">' + badgesHtml + '</div>';
+                
+                container.appendChild(card);
+                deckCardElements.push(card);
+            }
+
+            // Automatically focus the first deck for instant keyboard usage!
+            if (deckCardElements.length > 0) {
+                focusedDeckIndex = 0;
+                deckCardElements[0].className = "deck-card focused";
+            }
+        }
+
+        // Select Deck REST action
+        function selectDeck(deckId, deckName) {
+            showLoader("Đang chuẩn bị bộ thẻ...");
+            ajax('/api/select', 'POST', { deck_id: deckId, name: deckName }, function(data) {
+                document.getElementById('active-deck-name').innerHTML = '← ' + deckName.trim();
+                fetchCards();
+            }, function(status, errText) {
+                hideLoader();
+                alert("Lỗi khởi tạo phòng học.");
+            });
+        }
+
+        // Fetch cards rest API
+        function fetchCards() {
+            showLoader("Đang lấy thẻ học...");
+            ajax('/api/cards', 'GET', null, function(data) {
+                processCardsResponse(data);
+                hideLoader();
+            }, function(status, errText) {
+                hideLoader();
+                try {
+                    var errObj = JSON.parse(errText);
+                    alert(errObj.error || "Lỗi lấy danh sách thẻ học.");
+                } catch(e) {
+                    alert("Lỗi lấy danh sách thẻ học.");
+                }
+                backToDecks();
+            });
+        }
+
+        // Update counts and show card
+        function processCardsResponse(data) {
+            document.getElementById('c-new').innerHTML = "New: " + data.new_count;
+            document.getElementById('c-learn').innerHTML = "Learn: " + data.learn_count;
+            document.getElementById('c-rev').innerHTML = "Rev: " + data.review_count;
+
+            var cards = data.cards || [];
+            if (cards.length === 0) {
+                switchScreen('success');
+            } else {
+                activeCard = cards[0];
+                document.getElementById('question-box').textContent = activeCard.question;
+                document.getElementById('answer-box').textContent = activeCard.answer;
+                
+                isAnswerRevealed = false;
+                
+                var answerPanel = document.getElementById('answer-panel');
+                var revealBtn = document.getElementById('reveal-btn');
+                var scoreBlock = document.getElementById('score-block');
+                
+                // Compatible classList or className manipulations
+                answerPanel.className = 'qa-panel hidden';
+                revealBtn.className = 'btn-reveal';
+                scoreBlock.className = 'score-grid hidden';
+                
+                switchScreen('study');
+                document.getElementById('study-screen').scrollTop = 0;
+            }
+        }
+
+        function revealAnswer() {
+            isAnswerRevealed = true;
+            
+            var answerPanel = document.getElementById('answer-panel');
+            var revealBtn = document.getElementById('reveal-btn');
+            var scoreBlock = document.getElementById('score-block');
+            
+            answerPanel.className = 'qa-panel';
+            revealBtn.className = 'btn-reveal hidden';
+            scoreBlock.className = 'score-grid';
+            document.getElementById('study-screen').scrollTop = 0;
+        }
+
+        // Submit answer score
+        function submitAnswer(buttonIndex) {
+            if (!activeCard) return;
+            
+            showLoader("Đang gửi kết quả...");
+            var payload = {
+                card_id: activeCard.card_id,
+                button_index: buttonIndex,
+                time_taken_ms: 3000,
+                current_state: activeCard.next_states.current,
+                next_state: null
+            };
+
+            if (buttonIndex === 1) payload.next_state = activeCard.next_states.again;
+            else if (buttonIndex === 2) payload.next_state = activeCard.next_states.hard;
+            else if (buttonIndex === 3) payload.next_state = activeCard.next_states.good;
+            else if (buttonIndex === 4) payload.next_state = activeCard.next_states.easy;
+
+            ajax('/api/answer', 'POST', payload, function(data) {
+                processCardsResponse(data);
+                hideLoader();
+            }, function(status, errText) {
+                hideLoader();
+                alert("Lỗi gửi điểm. Hãy thử lật lại thẻ.");
+            });
+        }
+
+        // Layout Navigation Engine
+        function switchScreen(screenName) {
+            currentScreen = screenName;
+            
+            var deckScreen = document.getElementById('deck-screen');
+            var studyScreen = document.getElementById('study-screen');
+            var successScreen = document.getElementById('success-screen');
+            var backBtn = document.getElementById('back-btn');
+
+            deckScreen.className = 'screen hidden';
+            studyScreen.className = 'screen hidden';
+            successScreen.className = 'screen hidden';
+            
+            if (screenName === 'study' || screenName === 'success') {
+                document.body.className = "study-active";
+            } else {
+                document.body.className = "";
+            }
+            
+            if (screenName === 'deck') {
+                deckScreen.className = 'screen';
+                document.getElementById('header-title').innerHTML = "AnkiWeb Lite";
+                backBtn.style.display = "none";
+            } else if (screenName === 'study') {
+                studyScreen.className = 'screen';
+                document.getElementById('header-title').innerHTML = "Học Thẻ";
+                backBtn.style.display = "block";
+            } else if (screenName === 'success') {
+                successScreen.className = 'screen';
+                document.getElementById('header-title').innerHTML = "Hoàn Thành";
+                backBtn.style.display = "block";
+            }
+        }
+
+        function backToDecks() {
+            switchScreen('deck');
+            loadDecks();
+        }
+
+        // Binds physical QWERTY keys natively for BB10 Classic / Q10 / Passport
+        document.onkeydown = function(event) {
+            var e = event || window.event;
+            var key = e.key;
+            var keyCode = e.keyCode;
+            
+            // Avoid capturing text fields if user is typing (safety first)
+            if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+                return;
+            }
+
+            // Global d/f scrolling keys for fast tactile reading
+            if (key === 'd' || key === 'D' || keyCode === 68) {
+                var el = null;
+                if (currentScreen === 'deck') {
+                    el = document.getElementById('deck-screen');
+                } else if (currentScreen === 'study') {
+                    el = document.getElementById('study-screen');
+                }
+                if (el) {
+                    e.preventDefault();
+                    el.scrollTop += 60;
+                }
+            }
+            else if (key === 'j' || key === 'J' || keyCode === 74) {
+                if (currentScreen === 'study') {
+                    e.preventDefault();
+                    document.getElementById('study-screen').scrollTop += 60;
+                }
+            }
+            else if (key === 'f' || key === 'F' || keyCode === 70) {
+                var el = null;
+                if (currentScreen === 'deck') {
+                    el = document.getElementById('deck-screen');
+                } else if (currentScreen === 'study') {
+                    el = document.getElementById('study-screen');
+                }
+                if (el) {
+                    e.preventDefault();
+                    el.scrollTop -= 60;
+                }
+            }
+            else if (key === 'k' || key === 'K' || keyCode === 75) {
+                if (currentScreen === 'study') {
+                    e.preventDefault();
+                    document.getElementById('study-screen').scrollTop -= 60;
+                }
+            }
+
+            // 1. DECK LIST NAVIGATION SCREEN (VIM KEYS SUPPORT!)
+            if (currentScreen === 'deck') {
+                if (key === 'j' || key === 'J' || keyCode === 74) { // Move focus down
+                    e.preventDefault();
+                    if (focusedDeckIndex >= 0 && deckCardElements.length > 0) {
+                        deckCardElements[focusedDeckIndex].className = "deck-card";
+                        focusedDeckIndex = (focusedDeckIndex + 1) % deckCardElements.length;
+                        deckCardElements[focusedDeckIndex].className = "deck-card focused";
+                        deckCardElements[focusedDeckIndex].scrollIntoView(false); // Smooth scroll align!
+                    }
+                } 
+                else if (key === 'k' || key === 'K' || keyCode === 75) { // Move focus up
+                    e.preventDefault();
+                    if (focusedDeckIndex >= 0 && deckCardElements.length > 0) {
+                        deckCardElements[focusedDeckIndex].className = "deck-card";
+                        focusedDeckIndex = (focusedDeckIndex - 1 + deckCardElements.length) % deckCardElements.length;
+                        deckCardElements[focusedDeckIndex].className = "deck-card focused";
+                        deckCardElements[focusedDeckIndex].scrollIntoView(false);
+                    }
+                }
+                else if (key === 'l' || key === 'L' || keyCode === 76 || keyCode === 13) { // Open/select deck (L or Enter)
+                    e.preventDefault();
+                    if (focusedDeckIndex >= 0 && focusedDeckIndex < currentDecks.length) {
+                        var activeD = currentDecks[focusedDeckIndex];
+                        selectDeck(activeD.deck_id, activeD.name);
+                    }
+                }
+            }
+            
+            // 2. STUDY PANEL NAVIGATION SCREEN
+            else if (currentScreen === 'study') {
+                // Space or Enter key logic: reveal answer
+                if (keyCode === 32 || key === " " || keyCode === 13 || key === "Enter") {
+                    e.preventDefault();
+                    if (!isAnswerRevealed) {
+                        var revealBtn = document.getElementById('reveal-btn');
+                        revealBtn.className = 'btn-reveal keycap-active';
+                        setTimeout(function() {
+                            revealAnswer();
+                        }, 80);
+                    }
+                }
+                
+                // QWERTY Optimized scoring keys: Y-U-I-O (and fallback 1-4 numbers)
+                if (isAnswerRevealed) {
+                    var scoreBtn = null;
+                    var scoreVal = 0;
+                    
+                    // Key Y / 1 -> Again
+                    if (key === "y" || key === "Y" || keyCode === 89 || key === "1" || keyCode === 49) {
+                        scoreBtn = document.getElementById('btn-score-1');
+                        scoreVal = 1;
+                    }
+                    // Key U / 2 -> Hard
+                    else if (key === "u" || key === "U" || keyCode === 85 || key === "2" || keyCode === 50) {
+                        scoreBtn = document.getElementById('btn-score-2');
+                        scoreVal = 2;
+                    }
+                    // Key I / 3 -> Good
+                    else if (key === "i" || key === "I" || keyCode === 73 || key === "3" || keyCode === 51) {
+                        scoreBtn = document.getElementById('btn-score-3');
+                        scoreVal = 3;
+                    }
+                    // Key O / 4 -> Easy
+                    else if (key === "o" || key === "O" || keyCode === 79 || key === "4" || keyCode === 52) {
+                        scoreBtn = document.getElementById('btn-score-4');
+                        scoreVal = 4;
+                    }
+                    
+                    if (scoreBtn) {
+                        e.preventDefault();
+                        scoreBtn.className = scoreBtn.className + ' keycap-active';
+                        setTimeout(function() {
+                            submitAnswer(scoreVal);
+                        }, 100);
+                    }
+                }
+
+                // H Key to go back to Decks list (H or Backspace)
+                if (key === 'h' || key === 'H' || keyCode === 72 || keyCode === 8) {
+                    e.preventDefault();
+                    backToDecks();
+                }
+            }
+
+            // 3. SUCCESS SCREEN
+            else if (currentScreen === 'success') {
+                if (key === 'h' || key === 'H' || keyCode === 72 || keyCode === 8 || keyCode === 13) {
+                    e.preventDefault();
+                    backToDecks();
+                }
+            }
+        };
+    </script>
+</body>
+</html>
