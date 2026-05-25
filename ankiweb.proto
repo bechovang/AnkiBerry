@@ -1,0 +1,142 @@
+syntax = "proto3";
+
+message MinutesWestOfUtc {
+    int32 minutes_west_of_utc = 1;
+}
+
+message DeckNode {
+    int64 deck_id = 1;
+    string name = 2;
+    int32 level = 4;
+    bool collapsed = 5;
+    int32 review_count = 6;
+    int32 learn_count = 7;
+    int32 new_count = 8;
+    int32 intraday_learning = 9;
+    int32 interday_learning_uncapped = 10;
+    int32 new_uncapped = 11;
+    int32 review_uncapped = 12;
+    int32 total_in_deck = 13;
+    int32 total_including_children = 14;
+    bool filtered = 16;
+    repeated DeckNode children = 3;
+}
+
+message DeckListResponse {
+    DeckNode top_node = 1;
+    int64 current_deck_id = 2;
+    int64 collection_size_bytes = 3;
+    uint64 media_size_bytes = 4;
+}
+
+message SelectDeckRequest {
+    int64 deck_id = 1;
+}
+
+message SelectDeckResponse {
+    // Empty message
+}
+
+message MemoryState {
+    float stability = 1;
+    float difficulty = 2;
+}
+
+message SchedulingState_New {
+    int32 position = 1;
+}
+
+message SchedulingState_Learning {
+    int32 remaining_steps = 1;
+    int32 scheduled_secs = 2;
+    int32 elapsed_secs = 3;
+    MemoryState memory_state = 6;
+}
+
+message SchedulingState_Review {
+    int32 scheduled_days = 1;
+    int32 elapsed_days = 2;
+    float ease_factor = 3;
+    int32 lapses = 4;
+    bool leeched = 5;
+    MemoryState memory_state = 6;
+}
+
+message SchedulingState_Relearning {
+    SchedulingState_Review review = 1;
+    SchedulingState_Learning learning = 2;
+}
+
+message SchedulingState_Normal {
+    oneof kind {
+        SchedulingState_New new = 1;
+        SchedulingState_Learning learning = 2;
+        SchedulingState_Review review = 3;
+        SchedulingState_Relearning relearning = 4;
+    }
+}
+
+message SchedulingState_Preview {
+    int32 scheduled_secs = 1;
+    bool finished = 2;
+}
+
+message SchedulingState_ReschedulingFilter {
+    SchedulingState_Normal original_state = 1;
+}
+
+message SchedulingState_Filtered {
+    oneof kind {
+        SchedulingState_Preview preview = 1;
+        SchedulingState_ReschedulingFilter rescheduling = 2;
+    }
+}
+
+message SchedulingState {
+    oneof kind {
+        SchedulingState_Normal normal = 1;
+        SchedulingState_Filtered filtered = 2;
+    }
+    string custom_data = 3;
+}
+
+message NextStates {
+    SchedulingState current = 1;
+    SchedulingState again = 2;
+    SchedulingState hard = 3;
+    SchedulingState good = 4;
+    SchedulingState easy = 5;
+}
+
+message Card {
+    int64 card_id = 1;
+    string question = 2;
+    string answer = 3;
+    int32 count_index = 4;
+    repeated string button_labels = 5;
+    int64 note_id = 6;
+    int32 template_index = 7;
+    NextStates next_states = 8;
+}
+
+message StudyCardsResponse {
+    int32 sched_ver = 1;
+    repeated Card cards = 2;
+    int32 new_count = 3;
+    int32 learn_count = 4;
+    int32 review_count = 5;
+}
+
+message AnswerCard {
+    int64 card_id = 1;
+    int32 answer_button = 2;
+    int32 time_taken_millis = 3;
+    int64 answered_at_millis = 4;
+    SchedulingState current_state = 5;
+    SchedulingState next_state = 6;
+}
+
+message StudyCardsRequest {
+    AnswerCard answer = 1;
+    int64 next_card_id = 2;
+}

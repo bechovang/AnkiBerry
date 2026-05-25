@@ -1,20 +1,11 @@
 import os
-import sys
 import json
 import base64
 import requests
 from bs4 import BeautifulSoup
 from flask import Flask, jsonify, request, render_template
 
-# Resolve paths to import parent directory modules (compiled protobuf)
-parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(parent_dir)
-
-try:
-    import ankiweb_pb2
-except ImportError:
-    print("Error: ankiweb_pb2.py not found! Please run 'protoc --python_out=. ankiweb.proto' in the root directory first.")
-    sys.exit(1)
+import ankiweb_pb2
 
 app = Flask(__name__)
 
@@ -47,9 +38,8 @@ class AnkiSessionManager:
         self.load_cookies()
 
     def load_cookies(self):
-        # Scan multiple paths to locate the cookie file
+        # Scan paths to locate the cookie file
         paths_to_try = [
-            os.path.join(parent_dir, self.cookie_filename),
             self.cookie_filename,
             os.path.join(os.path.dirname(__file__), self.cookie_filename)
         ]
