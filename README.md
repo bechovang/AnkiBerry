@@ -45,12 +45,9 @@ BlackBerry 10 Browser
 ## Cài đặt
 
 ```bash
+git clone https://github.com/bechovang/AnkiBerry.git
+cd AnkiBerry
 pip install -r requirements.txt
-```
-
-Nếu chưa có file protobuf:
-```bash
-protoc --python_out=. ankiweb.proto
 ```
 
 ## Chuẩn bị Cookie
@@ -160,7 +157,7 @@ ngrok http 5000
 
 Cookie AnkiWeb hết hạn sau ~14 ngày. Khi app báo lỗi kết nối:
 1. Lấy lại cookie theo hướng dẫn [COOKIES.md](COOKIES.md)
-2. Thay nội dung file `json cookie.txt`
+2. Ghi đè 2 file `cookie_ankiweb.txt` và `cookie_ankiuser.txt`
 3. Restart server
 
 ## Tài liệu

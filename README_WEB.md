@@ -26,14 +26,16 @@ Vì vậy bản web này ưu tiên:
 graph TD
     BB10[BlackBerry 10 Browser] -->|HTTP / JSON| Flask[Flask Proxy on PC]
     Flask -->|HTTPS / Protobuf| AnkiWeb[ankiweb.net + ankiuser.net]
-    Cookie[json cookie.txt] --> Flask
+    Cookie1[cookie_ankiweb.txt] --> Flask
+    Cookie2[cookie_ankiuser.txt] --> Flask
 ```
 
 Thành phần chính:
 
 - `templates/index.html`: giao diện web nhẹ, tương thích browser cũ.
 - `app.py`: proxy Flask, lấy cookie local, gọi AnkiWeb và chuyển protobuf sang JSON.
-- `json cookie.txt`: chứa cookie của cả `ankiweb.net` và `ankiuser.net`.
+- `cookie_ankiweb.txt`: cookie từ `ankiweb.net` (lấy bằng Cookie Editor trên Chrome).
+- `cookie_ankiuser.txt`: cookie từ `ankiuser.net` (lấy bằng Cookie Editor trên Chrome).
 
 ## Trạng thái UI hiện tại
 
@@ -57,67 +59,33 @@ Yêu cầu:
 - `flask`
 - `beautifulsoup4`
 - `protobuf`
-- file `ankiweb_pb2.py` đã tồn tại ở thư mục gốc project
 
 Cài dependency:
 
 ```bash
-pip install flask requests beautifulsoup4 protobuf
-```
-
-Nếu chưa có file protobuf:
-
-```bash
-protoc --python_out=. ankiweb.proto
+pip install -r requirements.txt
 ```
 
 ## Chuẩn bị cookie
 
-Web app chỉ hoạt động khi có đủ cookie từ cả 2 domain:
+Web app cần 2 file cookie (đặt cùng thư mục với `app.py`):
 
-- `ankiweb.net`: dùng cho deck list và chọn deck
-- `ankiuser.net`: dùng cho study session
+- `cookie_ankiweb.txt`: cookie từ `ankiweb.net` (dùng cho deck list + chọn deck)
+- `cookie_ankiuser.txt`: cookie từ `ankiuser.net` (dùng cho study session)
 
-Các bước:
+Cách lấy bằng Cookie Editor trên Chrome:
 
-1. Đăng nhập `https://ankiweb.net` trên browser máy tính.
-2. Xuất cookie ở trang deck list.
-3. Mở một deck để vào `https://ankiuser.net/study`.
-4. Xuất cookie ở trang study.
-5. Gộp cả hai vào `json cookie.txt`.
+1. Đăng nhập `https://ankiweb.net` trên Chrome → Cookie Editor → Export as JSON → lưu thành `cookie_ankiweb.txt`
+2. Bấm vào một bộ thẻ bất kỳ để sang `https://ankiuser.net/study` → Cookie Editor → Export as JSON → lưu thành `cookie_ankiuser.txt`
 
-Ví dụ:
-
-```json
-[
-  {
-    "domain": "ankiweb.net",
-    "name": "ankiweb",
-    "value": "COOKIE_FOR_DECKS",
-    "path": "/",
-    "secure": true
-  },
-  {
-    "domain": "ankiuser.net",
-    "name": "ankiweb",
-    "value": "COOKIE_FOR_STUDY",
-    "path": "/",
-    "secure": true
-  }
-]
-```
-
-Vị trí file hợp lệ:
-
-- `ankiweb_cli/json cookie.txt`
-- `ankiweb_web/json cookie.txt`
+Xem hướng dẫn chi tiết tại [COOKIES.md](COOKIES.md).
 
 ## Chạy server
 
-Từ thư mục `ankiweb_web`:
+Từ thư mục project:
 
 ```bash
-cd C:\Users\Admin\Desktop\GIT CLONE\ankiweb_cli\ankiweb_web
+cd AnkiBerry
 python app.py
 ```
 
@@ -282,8 +250,8 @@ Dùng native app khi:
 
 Đường đi ổn định nhất cho BlackBerry Classic:
 
-1. Chuẩn bị đủ 2 cookie.
-2. Chạy `python app.py` trong `ankiweb_web`.
+1. Chuẩn bị đủ 2 file cookie (`cookie_ankiweb.txt` + `cookie_ankiuser.txt`).
+2. Chạy `python app.py` trong thư mục AnkiBerry.
 3. Lấy đúng IPv4 của Wi-Fi thật bằng `ipconfig`.
 4. Mở `http://<wifi-ip>:5000` trên BlackBerry.
 5. Nếu không vào được, kiểm tra server rồi firewall.
