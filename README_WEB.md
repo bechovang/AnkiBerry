@@ -176,6 +176,7 @@ New-NetFirewallRule -DisplayName "AnkiWeb Flask 5000" -Direction Inbound -Action
 ### Màn hình học thẻ
 
 - `Space` hoặc `Enter` hoặc `L`: lật thẻ / Kích hoạt phần tử đang được chọn (Lật thẻ hoặc Chấm điểm tương ứng)
+- `R`: phát lại âm thanh (Replay Audio) của thẻ
 - `Y` hoặc `1`: Again
 - `U` hoặc `2`: Hard
 - `I` hoặc `3`: Good

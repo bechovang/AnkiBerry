@@ -83,6 +83,8 @@ Màn hình cảm ứng của BlackBerry 10 khá nhỏ, do đó AnkiBerry đã đ
 * **Lật thẻ / Kích hoạt nhanh (Space / Enter / L)**:
   - Khi đang ở ô Câu hỏi: Nhấn **`Space`**, **`Enter`** hoặc **`L`** để lật thẻ và hiện đáp án.
   - Khi đang dùng phím `J/K` để di chuyển tiêu điểm ảo tới các nút bấm: Nhấn **`Space`** hoặc **`Enter`** sẽ tự động kích hoạt (Click) chính xác nút đó (Lật thẻ hoặc Chấm điểm tương ứng).
+* **Phát lại âm thanh (Replay Audio)**:
+  - Nhấn phím **`R`** bất kỳ lúc nào để phát lại âm thanh của thẻ (tự động phát âm thanh đáp án nếu đã lật, hoặc âm thanh câu hỏi nếu chưa lật).
 * **Phím tắt Chấm điểm trực tiếp (Không cần chọn tiêu điểm)**:
   - Khi đáp án đã hiển thị, bạn có thể gõ nhanh các phím sau để chấm điểm và chuyển sang thẻ tiếp theo:
     - **`Y`** hoặc phím số **`1`**: Chọn **Again** (Học lại)
@@ -178,6 +180,8 @@ AnkiBerry is heavily optimized for physical QWERTY keyboards, allowing **100% ke
 * **Reveal Card / Action Trigger (Space / Enter / L)**:
   - When focused on the Question area: Press **`Space`**, **`Enter`**, or **`L`** to flip the card and reveal the answer.
   - When focused on any button (Reveal or Score rating): Pressing **`Space`** or **`Enter`** will automatically trigger a click event on that active button.
+* **Replay Card Audio**:
+  - Press **`R`** at any time to replay the card's audio (automatically replays answer audio if revealed, or question audio if not).
 * **Direct Rating Shortcuts (No focus required)**:
   - Once the answer is revealed, you can press these QWERTY keys directly to score the card and transition to the next card immediately:
     - **`Y`** or number **`1`**: Score **Again**

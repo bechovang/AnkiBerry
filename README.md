@@ -104,6 +104,7 @@ New-NetFirewallRule -DisplayName "AnkiWeb Flask 5000" -Direction Inbound -Action
 | Phím | Hành động |
 |---|---|
 | `Space` / `L` / `Enter` | Lật thẻ / Kích hoạt phần tử đang được chọn (ví dụ: nút rating) |
+| `R` | Phát lại âm thanh (Replay Audio) của thẻ |
 | `Y` / `1` | Again |
 | `U` / `2` | Hard |
 | `I` / `3` | Good |

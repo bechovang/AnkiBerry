@@ -697,7 +697,7 @@
                     <button id="btn-score-4" class="btn-score score-4" onclick="submitAnswer(4)">Easy <span>[ O / 4 ]</span></button>
                 </div>
 
-                <div class="hotkeys-helper">H: quay lại | K: lên focus | J: xuống focus | L: lật thẻ | Y-U-I-O: chấm điểm</div>
+                <div class="hotkeys-helper">H: quay lại | K: lên | J: xuống | L: lật | R: phát lại âm thanh | Y-U-I-O: chấm điểm</div>
             </div>
         </div>
 
@@ -1103,6 +1103,30 @@
             });
         }
 
+        // Replay audio file of active card
+        function replayCardAudio() {
+            try {
+                if (isAnswerRevealed) {
+                    var answerAudios = document.getElementById('answer-box').getElementsByTagName('audio');
+                    if (answerAudios && answerAudios.length > 0) {
+                        answerAudios[0].currentTime = 0;
+                        answerAudios[0].play();
+                        console.log("Replay answer audio!");
+                        return;
+                    }
+                }
+                
+                var questionAudios = document.getElementById('question-box').getElementsByTagName('audio');
+                if (questionAudios && questionAudios.length > 0) {
+                    questionAudios[0].currentTime = 0;
+                    questionAudios[0].play();
+                    console.log("Replay question audio!");
+                }
+            } catch (audioErr) {
+                console.log("Replay audio failed:", audioErr);
+            }
+        }
+
         // Layout Navigation Engine
         function switchScreen(screenName) {
             currentScreen = screenName;
@@ -1211,6 +1235,13 @@
             
             // 2. STUDY PANEL NAVIGATION SCREEN
             else if (currentScreen === 'study') {
+                // Key R: Replay card audio
+                if (key === 'r' || key === 'R' || keyCode === 82) {
+                    e.preventDefault();
+                    replayCardAudio();
+                    return;
+                }
+
                 // Space / Enter / L: trigger active focused element or reveal answer
                 if (keyCode === 32 || key === " " || keyCode === 13 || key === "Enter" ||
                     key === 'l' || key === 'L' || keyCode === 76) {
