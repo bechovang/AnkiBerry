@@ -46,7 +46,7 @@ Bản UI đã được chỉnh lại theo hướng an toàn hơn cho BlackBerry 
 - Màn hình học thẻ dùng luồng dọc một cột, dễ đọc và dễ cuộn.
 - Cụm nút chấm điểm hiển thị dạng `2 x 2` thay vì ép `4 nút / 1 hàng`.
 - Nội dung câu hỏi và đáp án được render như text sạch, không chèn HTML thô.
-- Hỗ trợ cuộn bằng `J/K` ngoài `D/F`.
+- Hỗ trợ cuộn và di chuyển tiêu điểm học thẻ bằng `J/K` hoặc `D/F` với cơ chế vẽ viền xanh sky phát sáng và tự động tính toán cuộn viewport.
 
 Nếu bạn đang dùng BlackBerry Classic, đây là chế độ nên dùng.
 
@@ -175,13 +175,13 @@ New-NetFirewallRule -DisplayName "AnkiWeb Flask 5000" -Direction Inbound -Action
 
 ### Màn hình học thẻ
 
-- `Space` hoặc `Enter` hoặc `L`: lật thẻ / hiện đáp án
+- `Space` hoặc `Enter` hoặc `L`: lật thẻ / Kích hoạt phần tử đang được chọn (Lật thẻ hoặc Chấm điểm tương ứng)
 - `Y` hoặc `1`: Again
 - `U` hoặc `2`: Hard
 - `I` hoặc `3`: Good
 - `O` hoặc `4`: Easy
-- `D`: nhảy lên đầu trang
-- `F`: nhảy xuống cuối trang
+- `F` hoặc `J`: Di chuyển tiêu điểm xuống dưới (Câu hỏi $\rightarrow$ Đáp án $\rightarrow$ Nút chấm điểm)
+- `D` hoặc `K`: Di chuyển tiêu điểm lên trên (Nút chấm điểm $\rightarrow$ Đáp án $\rightarrow$ Câu hỏi)
 - `H` hoặc `Backspace`: quay lại deck list
 
 ### Màn hình hoàn thành

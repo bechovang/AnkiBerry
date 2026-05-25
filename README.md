@@ -100,14 +100,17 @@ New-NetFirewallRule -DisplayName "AnkiWeb Flask 5000" -Direction Inbound -Action
 
 | Phím | Hành động |
 |---|---|
-| `Space` / `L` / `Enter` | Lật thẻ |
+| `Space` / `L` / `Enter` | Lật thẻ / Kích hoạt phần tử đang được chọn (ví dụ: nút rating) |
 | `Y` / `1` | Again |
 | `U` / `2` | Hard |
 | `I` / `3` | Good |
 | `O` / `4` | Easy |
-| `D` | Nhảy lên đầu trang |
-| `F` | Nhảy xuống cuối trang |
+| `F` / `J` | Di chuyển tiêu điểm xuống dưới (Câu hỏi $\rightarrow$ Đáp án $\rightarrow$ Nút chấm điểm) |
+| `D` / `K` | Di chuyển tiêu điểm lên trên (Nút chấm điểm $\rightarrow$ Đáp án $\rightarrow$ Câu hỏi) |
 | `H` / `Backspace` | Quay lại danh sách bộ thẻ |
+
+> [!NOTE]
+> Phím `D`/`F` và `J`/`K` trong màn hình học thẻ đã được đồng bộ hóa thành cơ chế **State-based focus**, vẽ viền xanh sky-blue phát sáng bao quanh vùng đang học. Khi di chuyển, hệ thống tự động tính toán tọa độ hình học DOM và cuộn màn hình mượt mà trên cả Laptop (window viewport) lẫn trình duyệt WebKit của BlackBerry 10.
 
 ## API Endpoints
 

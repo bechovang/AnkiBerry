@@ -247,6 +247,26 @@
             body.study-active .score-3 { background-color: #2563eb !important; }
             body.study-active .score-4 { background-color: #16a34a !important; }
             
+            /* Focus highlights for study screen navigation */
+            body.study-active .qa-panel:focus,
+            body.study-active .qa-panel.focused {
+                border: 1px solid #38bdf8 !important;
+                background: rgba(56, 189, 248, 0.08) !important;
+                outline: none !important;
+            }
+            body.study-active .btn-reveal:focus,
+            body.study-active .btn-reveal.focused {
+                border: 1px solid #38bdf8 !important;
+                background: #38bdf8 !important;
+                color: black !important;
+                outline: none !important;
+            }
+            body.study-active .btn-score:focus,
+            body.study-active .btn-score.focused {
+                border: 2px solid #38bdf8 !important;
+                outline: none !important;
+            }
+            
             body.study-active .hotkeys-helper {
                 display: block !important;
                 margin-top: 10px !important;
@@ -644,7 +664,7 @@
             <!-- Flashcard rendering -->
             <div class="card-view">
                 <!-- Question -->
-                <div class="qa-panel">
+                <div id="study-question-panel" class="qa-panel">
                     <span class="panel-label">Câu Hỏi</span>
                     <p id="question-box" class="qa-text">Đang nạp...</p>
                 </div>
@@ -669,7 +689,7 @@
                     <button id="btn-score-4" class="btn-score score-4" onclick="submitAnswer(4)">Easy <span>[ O / 4 ]</span></button>
                 </div>
 
-                <div class="hotkeys-helper">H: quay lại | D: lên đầu | F: xuống cuối | L: lật thẻ | Y-U-I-O: chấm điểm</div>
+                <div class="hotkeys-helper">H: quay lại | D: lên focus | F: xuống focus | L: lật thẻ | Y-U-I-O: chấm điểm</div>
             </div>
         </div>
 
@@ -689,6 +709,109 @@
         var activeCard = null;
         var isAnswerRevealed = false;
         var currentScreen = 'deck'; // Tracks active screen: 'deck', 'study', 'success'
+        
+        // State-based Focus/Scroll States for Study Screen
+        var studyElements = [];
+        var focusedStudyIndex = 0;
+        
+        function updateStudyElements() {
+            try {
+                studyElements = [];
+                var qPanel = document.getElementById('study-question-panel');
+                if (qPanel) studyElements.push(qPanel);
+
+                if (isAnswerRevealed) {
+                    var aPanel = document.getElementById('answer-panel');
+                    if (aPanel) studyElements.push(aPanel);
+                    
+                    var score1 = document.getElementById('btn-score-1');
+                    var score2 = document.getElementById('btn-score-2');
+                    var score3 = document.getElementById('btn-score-3');
+                    var score4 = document.getElementById('btn-score-4');
+                    if (score1) studyElements.push(score1);
+                    if (score2) studyElements.push(score2);
+                    if (score3) studyElements.push(score3);
+                    if (score4) studyElements.push(score4);
+                } else {
+                    var revBtn = document.getElementById('reveal-btn');
+                    if (revBtn) studyElements.push(revBtn);
+                }
+                console.log("updateStudyElements: studyElements.length =", studyElements.length);
+            } catch(e) {
+                console.log("updateStudyElements ERROR:", e);
+            }
+        }
+
+        function applyStudyFocus(index) {
+            try {
+                console.log("applyStudyFocus: index =", index, "studyElements.length =", studyElements.length);
+                if (!studyElements || studyElements.length === 0) return;
+                
+                if (index < 0 || index >= studyElements.length) {
+                    index = 0;
+                }
+                
+                // 1. Reset styles of all elements in the studyElements array to default
+                for (var i = 0; i < studyElements.length; i++) {
+                    var el = studyElements[i];
+                    if (el) {
+                        el.className = el.className.replace(' focused', '');
+                        el.style.border = "";
+                        el.style.backgroundColor = "";
+                        el.style.boxShadow = "";
+                        el.style.color = "";
+                    }
+                }
+                
+                // 2. Set index and add focused class + style to active element
+                focusedStudyIndex = index;
+                var activeEl = studyElements[focusedStudyIndex];
+                if (activeEl) {
+                    if (activeEl.className.indexOf('focused') === -1) {
+                        activeEl.className = activeEl.className + ' focused';
+                    }
+                    
+                    // Direct inline style updates for absolute specificity and perfect premium UI highlights
+                    if (activeEl.id === 'study-question-panel' || activeEl.id === 'answer-panel') {
+                        activeEl.style.border = "1px solid #38bdf8";
+                        activeEl.style.backgroundColor = "rgba(56, 189, 248, 0.12)";
+                        activeEl.style.boxShadow = "0 0 8px rgba(56, 189, 248, 0.4)";
+                    } else if (activeEl.className.indexOf('btn-reveal') !== -1) {
+                        activeEl.style.border = "1px solid #38bdf8";
+                        activeEl.style.backgroundColor = "#38bdf8";
+                        activeEl.style.color = "black";
+                        activeEl.style.boxShadow = "0 0 10px rgba(56, 189, 248, 0.6)";
+                    } else if (activeEl.className.indexOf('btn-score') !== -1) {
+                        activeEl.style.border = "2px solid #38bdf8";
+                        activeEl.style.boxShadow = "0 0 12px rgba(56, 189, 248, 0.7)";
+                    }
+                    
+                    console.log("applyStudyFocus: added focused style to", activeEl.id);
+                    
+                    // 3. Scroll both container (.app-container) and window viewport for absolute cross-device compatibility
+                    var container = document.querySelector('.app-container');
+                    if (container) {
+                        var elementTop = activeEl.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop;
+                        container.scrollTop = elementTop - 12;
+                    }
+                    
+                    // Scroll the window viewport (essential for laptop/browsers where window is the real scroll viewport)
+                    var currentScrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+                    var elementTopWindow = activeEl.getBoundingClientRect().top + currentScrollTop - 12;
+                    window.scrollTo({
+                        top: elementTopWindow,
+                        behavior: 'auto'
+                    });
+                    
+                    // Fallback direct assignment for maximum backward compatibility
+                    document.documentElement.scrollTop = elementTopWindow;
+                    document.body.scrollTop = elementTopWindow;
+                    console.log("applyStudyFocus: scrolled container and window to", elementTop - 12, "and", elementTopWindow);
+                }
+            } catch (e) {
+                console.log("applyStudyFocus ERROR:", e);
+            }
+        }
         
         // Vim Keyboard Focus States for Decks List
         var currentDecks = [];
@@ -865,6 +988,10 @@
                 
                 switchScreen('study');
                 document.getElementById('study-screen').scrollTop = 0;
+                
+                // State-based Focus Reset
+                updateStudyElements();
+                applyStudyFocus(0);
             }
         }
 
@@ -878,7 +1005,10 @@
             answerPanel.className = 'qa-panel';
             revealBtn.className = 'btn-reveal hidden';
             scoreBlock.className = 'score-grid';
-            document.getElementById('study-screen').scrollTop = 0;
+            
+            // State-based Reveal and Focus
+            updateStudyElements();
+            applyStudyFocus(1);
         }
 
         // Submit answer score
@@ -958,17 +1088,30 @@
                 return;
             }
 
-            // D = jump to top, F = jump to bottom of study content
-            // In study mode, .app-container is the real scroll container (overflow: auto)
+            // D/K = move focus up, F/J = move focus down in study screen
             if (currentScreen === 'study') {
-                var container = document.querySelector('.app-container');
-                if (key === 'd' || key === 'D' || keyCode === 68) {
+                var isUp = (key === 'd' || key === 'D' || keyCode === 68 || key === 'k' || key === 'K' || keyCode === 75);
+                var isDown = (key === 'f' || key === 'F' || keyCode === 70 || key === 'j' || key === 'J' || keyCode === 74);
+                
+                if (isUp) {
                     e.preventDefault();
-                    if (container) container.scrollTop = 0;
+                    console.log("KeyDown study screen: UP pressed", key, keyCode);
+                    if (studyElements.length > 0) {
+                        var nextIndex = (focusedStudyIndex - 1 + studyElements.length) % studyElements.length;
+                        applyStudyFocus(nextIndex);
+                    } else {
+                        console.log("KeyDown warning: studyElements is empty!");
+                    }
                 }
-                else if (key === 'f' || key === 'F' || keyCode === 70) {
+                else if (isDown) {
                     e.preventDefault();
-                    if (container) container.scrollTop = container.scrollHeight;
+                    console.log("KeyDown study screen: DOWN pressed", key, keyCode);
+                    if (studyElements.length > 0) {
+                        var nextIndex = (focusedStudyIndex + 1) % studyElements.length;
+                        applyStudyFocus(nextIndex);
+                    } else {
+                        console.log("KeyDown warning: studyElements is empty!");
+                    }
                 }
             }
 
@@ -1003,16 +1146,38 @@
             
             // 2. STUDY PANEL NAVIGATION SCREEN
             else if (currentScreen === 'study') {
-                // Space / Enter / L: reveal answer (vim L = forward/next)
+                // Space / Enter / L: trigger active focused element or reveal answer
                 if (keyCode === 32 || key === " " || keyCode === 13 || key === "Enter" ||
                     key === 'l' || key === 'L' || keyCode === 76) {
                     e.preventDefault();
+                    
+                    var activeEl = studyElements[focusedStudyIndex];
+                    if (activeEl) {
+                        if (activeEl.id === 'reveal-btn') {
+                            activeEl.className = 'btn-reveal keycap-active focused';
+                            setTimeout(function() {
+                                revealAnswer();
+                            }, 80);
+                            return;
+                        } else if (activeEl.id && activeEl.id.indexOf('btn-score-') !== -1) {
+                            var scoreVal = parseInt(activeEl.id.replace('btn-score-', ''));
+                            activeEl.className = activeEl.className + ' keycap-active';
+                            setTimeout(function() {
+                                submitAnswer(scoreVal);
+                            }, 100);
+                            return;
+                        }
+                    }
+                    
+                    // Fallback to default reveal if nothing else is actively focused
                     if (!isAnswerRevealed) {
                         var revealBtn = document.getElementById('reveal-btn');
-                        revealBtn.className = 'btn-reveal keycap-active';
-                        setTimeout(function() {
-                            revealAnswer();
-                        }, 80);
+                        if (revealBtn) {
+                            revealBtn.className = 'btn-reveal keycap-active';
+                            setTimeout(function() {
+                                revealAnswer();
+                            }, 80);
+                        }
                     }
                 }
                 
