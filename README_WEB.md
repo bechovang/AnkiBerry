@@ -255,4 +255,4 @@ Dùng native app khi:
 3. Lấy đúng IPv4 của Wi-Fi thật bằng `ipconfig`.
 4. Mở `http://<wifi-ip>:5000` trên BlackBerry.
 5. Nếu không vào được, kiểm tra server rồi firewall.
-6. Dùng `Space`, `Y/U/I/O`, `J/K`, `H` làm thao tác chính.
+6. Dùng `Space`, `Y/U/I/O`, `J/K`, `H` làm thao tác chính (Nên dùng cặp phím `J/K` thay cho `D/F` khi bật bộ gõ tiếng Việt để tránh chữ `d` bị Telex hóa thành `Đ`. Đồng thời có thể vuốt cuộn màn hình cảm ứng tự do mà không lo bị click nhầm nhờ bộ lọc ghost click Capture Phase).

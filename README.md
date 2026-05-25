@@ -112,6 +112,10 @@ New-NetFirewallRule -DisplayName "AnkiWeb Flask 5000" -Direction Inbound -Action
 > [!NOTE]
 > Phím `D`/`F` và `J`/`K` trong màn hình học thẻ đã được đồng bộ hóa thành cơ chế **State-based focus**, vẽ viền xanh sky-blue phát sáng bao quanh vùng đang học. Khi di chuyển, hệ thống tự động tính toán tọa độ hình học DOM và cuộn màn hình mượt mà trên cả Laptop (window viewport) lẫn trình duyệt WebKit của BlackBerry 10.
 
+> [!TIP]
+> - **Chống chạm nhầm khi vuốt**: Hệ thống tích hợp bộ lọc cử chỉ ở Capture Phase, tự động chặn đứng các sự kiện chạm nhầm (ghost clicks) khi bạn đang vuốt cuộn màn hình trên các thiết bị di động cảm ứng cũ (như BB10).
+> - **Khi bật Bộ gõ tiếng Việt (Telex/VNI)**: Phím `D` gõ nhanh có thể bị IME Telex hóa thành chữ `Đ` (keyCode 229). Để học thẻ ổn định và không bị gián đoạn, hãy sử dụng phím **`J`** (xuống) và **`K`** (lên) để di chuyển tiêu điểm học thẻ cực kỳ trơn tru.
+
 ## API Endpoints
 
 | Method | Route | Mô tả |

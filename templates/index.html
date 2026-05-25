@@ -714,6 +714,41 @@
         var studyElements = [];
         var focusedStudyIndex = 0;
         
+        // Touch scroll / tap differentiation engine for older mobile browsers
+        var touchStartX = 0;
+        var touchStartY = 0;
+        var touchIsScrolling = false;
+
+        document.addEventListener('touchstart', function(e) {
+            var touch = (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0]) || e;
+            touchStartX = touch.clientX || 0;
+            touchStartY = touch.clientY || 0;
+            touchIsScrolling = false;
+        }, false);
+
+        document.addEventListener('touchmove', function(e) {
+            var touch = (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0]) || e;
+            var currentX = touch.clientX || 0;
+            var currentY = touch.clientY || 0;
+            var diffX = Math.abs(currentX - touchStartX);
+            var diffY = Math.abs(currentY - touchStartY);
+            
+            // If movement is larger than 8px in any direction, classify it as a swipe/scroll
+            if (diffX > 8 || diffY > 8) {
+                touchIsScrolling = true;
+            }
+        }, false);
+
+        // Intercept accidental ghost clicks in Capture Phase (useCapture = true)
+        document.addEventListener('click', function(e) {
+            if (touchIsScrolling) {
+                e.preventDefault();
+                e.stopPropagation();
+                touchIsScrolling = false;
+                console.log("Accidental click prevented during swipe!");
+            }
+        }, true);
+        
         function updateStudyElements() {
             try {
                 studyElements = [];
@@ -1090,7 +1125,7 @@
 
             // D/K = move focus up, F/J = move focus down in study screen
             if (currentScreen === 'study') {
-                var isUp = (key === 'd' || key === 'D' || keyCode === 68 || key === 'k' || key === 'K' || keyCode === 75);
+                var isUp = (key === 'd' || key === 'D' || key === 'đ' || key === 'Đ' || keyCode === 68 || key === 'k' || key === 'K' || keyCode === 75);
                 var isDown = (key === 'f' || key === 'F' || keyCode === 70 || key === 'j' || key === 'J' || keyCode === 74);
                 
                 if (isUp) {
