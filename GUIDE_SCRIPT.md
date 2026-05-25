@@ -94,6 +94,7 @@ Màn hình cảm ứng của BlackBerry 10 khá nhỏ, do đó AnkiBerry đã đ
 ### 🌟 3. Các cải tiến nâng cấp cao cấp
 - **Tương thích hoàn hảo Bộ gõ Tiếng Việt**: Cặp phím điều hướng **`J/K`** được thiết kế đặc thù để hoàn toàn miễn nhiễm với Telex/IME tiếng Việt (tránh hiện tượng phím `D` bị gõ nhầm thành chữ `Đ` do bộ gõ).
 - **Chống chạm nhầm khi vuốt cuộn (Touch Scroll Filter)**: Tích hợp bộ lọc cảm ứng Capture Phase cao cấp, tự động chặn đứng các sự kiện click chạm nhầm (ghost clicks) khi bạn đang vuốt cuộn đọc nội dung thẻ dài bị lag trên BlackBerry 10.
+- **Proxy Truyền Ngược Âm Thanh & Tự Động Phát (Autoplay)**: Tự động tải và stream ngược các tệp âm thanh nhị phân (MP3, WAV, OGG,...) và hình ảnh trực tiếp từ AnkiWeb qua Flask proxy nội bộ, giải quyết triệt để lỗi SSL/Cookie của trình duyệt cũ. Backend tự động chuyển đổi định dạng thô `[sound:...]` thành thẻ HTML5 `<audio>` chuẩn, kết hợp JavaScript kích hoạt tự động phát khi hiển thị câu hỏi/đáp án vô cùng mượt mà.
 
 ---
 ---
@@ -188,3 +189,4 @@ AnkiBerry is heavily optimized for physical QWERTY keyboards, allowing **100% ke
 ### 🌟 3. Premium Mechanical Optimizations
 - **Vietnamese IME / Telex Protection**: The **`J/K`** keys are chosen as the primary navigation shortcuts to prevent key conflicts with Vietnamese Telex input methods (avoiding phím `D` from being translated into letter `Đ` by the keyboard engine).
 - **Anti-Accidental Swipe Clicks (Touch Scroll Filter)**: Intercepts and filters out lag-induced ghost click events at the Capture Phase when swiping or scrolling down on long cards.
+- **Secure Audio/Media Proxying & Autoplay**: Automatically downloads and proxies media resources (MP3, WAV, OGG, etc.) and images directly from AnkiWeb via the local Flask proxy to bypass strict SSL/cookie legacy WebKit limits. Translates raw `[sound:...]` card markup into standard HTML5 `<audio>` players on the fly, with native JavaScript autoplay wrapped in robust try-catch handlers.

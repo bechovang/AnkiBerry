@@ -459,6 +459,14 @@
             overflow-wrap: break-word;
         }
 
+        .anki-audio {
+            display: block;
+            margin: 12px auto;
+            max-width: 100%;
+            height: 36px;
+            outline: none;
+        }
+
         /* Action Buttons */
         .action-area {
             display: flex;
@@ -1007,8 +1015,8 @@
                 switchScreen('success');
             } else {
                 activeCard = cards[0];
-                document.getElementById('question-box').textContent = activeCard.question;
-                document.getElementById('answer-box').textContent = activeCard.answer;
+                document.getElementById('question-box').innerHTML = activeCard.question;
+                document.getElementById('answer-box').innerHTML = activeCard.answer;
                 
                 isAnswerRevealed = false;
                 
@@ -1027,6 +1035,17 @@
                 // State-based Focus Reset
                 updateStudyElements();
                 applyStudyFocus(0);
+                
+                // Auto-play audio inside the question box
+                try {
+                    var questionAudios = document.getElementById('question-box').getElementsByTagName('audio');
+                    if (questionAudios && questionAudios.length > 0) {
+                        questionAudios[0].play();
+                        console.log("Autoplay question audio success!");
+                    }
+                } catch (audioErr) {
+                    console.log("Autoplay question audio failed:", audioErr);
+                }
             }
         }
 
@@ -1044,6 +1063,17 @@
             // State-based Reveal and Focus
             updateStudyElements();
             applyStudyFocus(1);
+            
+            // Auto-play audio inside the answer box
+            try {
+                var answerAudios = document.getElementById('answer-box').getElementsByTagName('audio');
+                if (answerAudios && answerAudios.length > 0) {
+                    answerAudios[0].play();
+                    console.log("Autoplay answer audio success!");
+                }
+            } catch (audioErr) {
+                console.log("Autoplay answer audio failed:", audioErr);
+            }
         }
 
         // Submit answer score

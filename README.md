@@ -32,6 +32,9 @@ BlackBerry 10 Browser
 
 - **Danh sách bộ thẻ** - Xem tất cả deck với số lượng thẻ mới/đang học/cần ôn
 - **Học thẻ** - Lật thẻ, xem câu hỏi/đáp án, chấm điểm (Again/Hard/Good/Easy)
+- **Hỗ trợ Âm thanh & Hình ảnh (Media Proxy)** - Tự động tải và stream ngược các tệp âm thanh (MP3, WAV, OGG,...) và hình ảnh trực tiếp từ AnkiWeb qua Flask proxy để vượt qua hạn chế bảo mật SSL/Cookie của trình duyệt cũ.
+- **Tự động Phát Âm Thanh (Autoplay)** - Tự động phát âm thanh của thẻ ngay khi tải câu hỏi và khi lật xem đáp án, hỗ trợ học ngoại ngữ cực kỳ mượt mà.
+- **Tự động chuyển đổi thẻ `[sound:...]`** - Chuyển đổi trực tiếp các thẻ âm thanh thô của Anki sang thẻ HTML5 `<audio>` chuẩn trên backend, hiển thị thanh điều khiển đẹp mắt và tương thích hoàn toàn với ES5.
 - **Điều hướng bàn phím vật lý** - Tối ưu cho bàn phím QWERTY BlackBerry
 - **Tương thích BB10** - ES5 thuần, không framework, không CSS variables, không font ngoài
 - **Màn hình vuông** - Tối ưu layout cho 720x720 (Q10, Classic) và 1440x1440 (Passport)
@@ -125,6 +128,7 @@ New-NetFirewallRule -DisplayName "AnkiWeb Flask 5000" -Direction Inbound -Action
 | `POST` | `/api/select` | Chọn bộ thẻ để học |
 | `GET` | `/api/cards` | Lấy thẻ học |
 | `POST` | `/api/answer` | Gửi kết quả chấm điểm |
+| `GET` | `/study/<path:filename>` và `/<path:filename>` | Proxy tải & truyền ngược dữ liệu âm thanh/hình ảnh từ AnkiWeb |
 
 ## Deploy
 

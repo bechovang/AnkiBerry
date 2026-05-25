@@ -196,12 +196,20 @@ def clean_html(html):
     if not html:
         return ""
     import re
+    # Convert [sound:filename.mp3] to HTML5 audio tags
+    html = re.sub(r'\[sound:([^\]]+)\]', r'<audio class="anki-audio" controls=""><source src="\1" type="audio/mpeg"></audio>', html)
+    
     # Remove script and style elements
     html = re.sub(r'<(script|style).*?>.*?</\1>', '', html, flags=re.DOTALL | re.IGNORECASE)
     soup = BeautifulSoup(html, "html.parser")
-    text = soup.get_text("\n")
-    lines = [line.strip() for line in text.split("\n") if line.strip()]
-    return "\n".join(lines)
+    
+    # Safely keep only formatting, audio, source, and img elements
+    allowed_tags = ['audio', 'source', 'img', 'br', 'b', 'i', 'span', 'strong', 'em', 'p', 'div']
+    for tag in soup.find_all(True):
+        if tag.name not in allowed_tags:
+            tag.unwrap()
+            
+    return str(soup).strip()
 
 # Recursive deck tree formatter
 def format_deck_node(node, deck_list):
@@ -217,7 +225,54 @@ def format_deck_node(node, deck_list):
     for child in node.children:
         format_deck_node(child, deck_list)
 
-# Flask Route definitions
+# Flask Route definitions for media proxying (audio/images)
+@app.route('/study/<path:filename>')
+@app.route('/<path:filename>')
+def proxy_media(filename):
+    # Extract only the actual file basename to query the sync server correctly
+    actual_filename = os.path.basename(filename)
+    
+    # Check if the file is a known media format
+    ext = os.path.splitext(actual_filename)[1].lower()
+    mime_types = {
+        '.mp3': 'audio/mpeg',
+        '.wav': 'audio/wav',
+        '.ogg': 'audio/ogg',
+        '.aac': 'audio/aac',
+        '.m4a': 'audio/mp4',
+        '.png': 'image/png',
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.gif': 'image/gif',
+        '.svg': 'image/svg+xml'
+    }
+    
+    if ext not in mime_types:
+        # Pass-through or abort for non-media paths
+        return "Not Found", 404
+        
+    url = f"https://ankiuser.net/study/media/{actual_filename}"
+    req_headers = {
+        "User-Agent": anki_manager.headers["User-Agent"],
+        "Referer": "https://ankiuser.net/study"
+    }
+    
+    try:
+        res = anki_manager.session.get(url, headers=req_headers, stream=True, timeout=15)
+        if res.status_code == 200:
+            from flask import Response
+            return Response(
+                res.raw.read(),
+                mimetype=mime_types[ext],
+                headers={
+                    "Content-Disposition": f"inline; filename={actual_filename}",
+                    "Cache-Control": "public, max-age=31536000"
+                }
+            )
+        return f"Failed to fetch media: status {res.status_code}", res.status_code
+    except Exception as e:
+        return f"Error proxying media: {e}", 500
+
 @app.route('/')
 def index():
     return render_template("index.html")
