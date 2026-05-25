@@ -13,7 +13,7 @@ BlackBerry 10 Browser
         |
      HTTP / JSON
         |
-  Flask Proxy (app.py)  <--- json cookie.txt
+  Flask Proxy (app.py)  <--- cookie_ankiweb.txt + cookie_ankiuser.txt
         |
   HTTPS / Protobuf
         |
@@ -24,7 +24,8 @@ BlackBerry 10 Browser
 |---|---|
 | `app.py` | Flask server proxy - chuyển protobuf sang JSON |
 | `templates/index.html` | Giao diện web ES5 thuần, tối ưu cho màn hình vuông 1:1 |
-| `json cookie.txt` | Cookie session AnkiWeb (không commit vào repo) |
+| `cookie_ankiweb.txt` | Cookie ankiweb.net (Cookie Editor export, không commit) |
+| `cookie_ankiuser.txt` | Cookie ankiuser.net (Cookie Editor export, không commit) |
 | `ankiweb_pb2.py` | Protobuf bindings cho AnkiWeb API (cần có sẵn) |
 
 ## Tính năng
@@ -54,33 +55,16 @@ protoc --python_out=. ankiweb.proto
 
 ## Chuẩn bị Cookie
 
-App cần cookie từ cả `ankiweb.net` và `ankiuser.net`. Cách đơn giản nhất:
+App cần 2 file cookie (đặt cùng thư mục với `app.py`):
 
-1. Cài extension **Cookie Editor** trên Chrome
-2. Đăng nhập https://ankiweb.net → Cookie Editor → Export as JSON → copy
-3. Mở deck để vào https://ankiuser.net → Cookie Editor → Export as JSON → copy
-4. Gộp cả 2 cookie vào file `json cookie.txt` (đặt cùng thư mục với `app.py`)
+| File | Lấy ở đâu |
+|---|---|
+| `cookie_ankiweb.txt` | Đăng nhập https://ankiweb.net → Cookie Editor → Export as JSON → lưu |
+| `cookie_ankiuser.txt` | Mở deck vào https://ankiuser.net → Cookie Editor → Export as JSON → lưu |
 
-```json
-[
-    {
-        "domain": "ankiweb.net",
-        "name": "ankiweb",
-        "value": "GIÁ_TRỊ_COOKIE_ANKIWEB",
-        "path": "/",
-        "secure": true
-    },
-    {
-        "domain": "ankiuser.net",
-        "name": "ankiweb",
-        "value": "GIÁ_TRỊ_COOKIE_ANKIUSER",
-        "path": "/",
-        "secure": true
-    }
-]
-```
+Dùng extension **Cookie Editor** trên Chrome, bấm Export as JSON rồi lưu thẳng vào file tương ứng. Không cần sửa gì thêm.
 
-> Hướng dẫn chi tiết kèm hình ảnh từng bước: [COOKIES.md](COOKIES.md)
+> Hướng dẫn chi tiết từng bước: [COOKIES.md](COOKIES.md)
 
 ## Chạy
 

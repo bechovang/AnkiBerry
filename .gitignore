@@ -25,10 +25,10 @@ env/
 Thumbs.db
 desktop.ini
 
-# Sensitive files - cookie containing AnkiWeb session tokens
+# Sensitive files - cookies containing AnkiWeb session tokens
+cookie_ankiweb.txt
+cookie_ankiuser.txt
 json cookie.txt
-*cookie*.txt
-*cookie*.json
 
 # Logs
 *.log

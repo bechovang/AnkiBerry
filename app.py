@@ -18,8 +18,8 @@ def add_header(response):
 
 # Core Session manager
 class AnkiSessionManager:
-    def __init__(self, cookie_filename="json cookie.txt"):
-        self.cookie_filename = cookie_filename
+    def __init__(self, cookie_dir=None):
+        self.cookie_dir = cookie_dir or os.path.dirname(__file__)
         self.session = requests.Session()
         self.headers = {
             "sec-ch-ua": '"Chromium";v="148", "Google Chrome";v="148", "Not/A)Brand";v="99"',
@@ -37,39 +37,40 @@ class AnkiSessionManager:
         }
         self.load_cookies()
 
+    def _load_cookie_file(self, filename):
+        path = os.path.join(self.cookie_dir, filename)
+        if not os.path.exists(path):
+            print(f"  {filename}: not found.")
+            return 0
+        with open(path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        if not isinstance(data, list):
+            data = [data]
+        count = 0
+        for c in data:
+            domain = c.get('domain', '').lstrip('.')
+            if not domain:
+                continue
+            self.session.cookies.set(
+                name=c['name'],
+                value=c['value'],
+                domain=domain,
+                path=c.get('path', '/')
+            )
+            count += 1
+        print(f"  {filename}: {count} cookie(s).")
+        return count
+
     def load_cookies(self):
-        # Scan paths to locate the cookie file
-        paths_to_try = [
-            self.cookie_filename,
-            os.path.join(os.path.dirname(__file__), self.cookie_filename)
-        ]
-        
-        cookie_path = None
-        for p in paths_to_try:
-            if os.path.exists(p):
-                cookie_path = p
-                break
-                
-        if not cookie_path:
-            print(f"Warning: Cookie file '{self.cookie_filename}' not found! APIs will fail until cookies are supplied.")
-            return False
-            
-        try:
-            with open(cookie_path, 'r', encoding='utf-8') as f:
-                cookies_data = json.load(f)
-            for c in cookies_data:
-                domain = c.get('domain', 'ankiweb.net').lstrip('.')
-                self.session.cookies.set(
-                    name=c['name'],
-                    value=c['value'],
-                    domain=domain,
-                    path=c.get('path', '/')
-                )
-            print(f"Successfully loaded {len(cookies_data)} cookies into session.")
-            return True
-        except Exception as e:
-            print(f"Error loading cookies: {e}")
-            return False
+        print("Loading cookies...")
+        total = 0
+        total += self._load_cookie_file("cookie_ankiweb.txt")
+        total += self._load_cookie_file("cookie_ankiuser.txt")
+        if total == 0:
+            print("WARNING: No cookies loaded! Place cookie_ankiweb.txt and cookie_ankiuser.txt in the project folder.")
+        else:
+            print(f"Total: {total} cookie(s) loaded.")
+        return total > 0
 
     def fetch_decks(self):
         req_headers = self.headers.copy()
