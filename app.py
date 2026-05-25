@@ -37,37 +37,39 @@ class AnkiSessionManager:
         }
         self.load_cookies()
 
-    def _load_cookie_file(self, filename):
-        path = os.path.join(self.cookie_dir, filename)
-        if not os.path.exists(path):
-            print(f"  {filename}: not found.")
-            return 0
-        with open(path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-        if not isinstance(data, list):
-            data = [data]
-        count = 0
-        for c in data:
-            domain = c.get('domain', '').lstrip('.')
-            if not domain:
-                continue
-            self.session.cookies.set(
-                name=c['name'],
-                value=c['value'],
-                domain=domain,
-                path=c.get('path', '/')
-            )
-            count += 1
-        print(f"  {filename}: {count} cookie(s).")
-        return count
-
     def load_cookies(self):
+        """Load cookies from cookie_ankiweb.txt and cookie_ankiuser.txt."""
         print("Loading cookies...")
         total = 0
-        total += self._load_cookie_file("cookie_ankiweb.txt")
-        total += self._load_cookie_file("cookie_ankiuser.txt")
+        for filename in ["cookie_ankiweb.txt", "cookie_ankiuser.txt"]:
+            path = os.path.join(self.cookie_dir, filename)
+            if not os.path.exists(path):
+                print(f"  {filename}: not found.")
+                continue
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                if not isinstance(data, list):
+                    data = [data]
+                for c in data:
+                    domain = c.get('domain', '').lstrip('.')
+                    if not domain:
+                        continue
+                    self.session.cookies.set(
+                        name=c['name'],
+                        value=c['value'],
+                        domain=domain,
+                        path=c.get('path', '/')
+                    )
+                    total += 1
+                print(f"  {filename}: OK")
+            except Exception as e:
+                print(f"  {filename}: error - {e}")
+
         if total == 0:
-            print("WARNING: No cookies loaded! Place cookie_ankiweb.txt and cookie_ankiuser.txt in the project folder.")
+            print("WARNING: No cookies loaded!")
+            print("  1. Dang nhap https://ankiweb.net > Cookie Editor > Export as JSON > luu thanh cookie_ankiweb.txt")
+            print("  2. Mo deck vao https://ankiuser.net > Cookie Editor > Export as JSON > luu thanh cookie_ankiuser.txt")
         else:
             print(f"Total: {total} cookie(s) loaded.")
         return total > 0
