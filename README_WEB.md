@@ -246,6 +246,27 @@ Dùng native app khi:
 - muốn kiểm soát tốt hơn bàn phím và scroll
 - chấp nhận quy trình build Cascades / Momentics
 
+## Các cải tiến kỹ thuật nâng cao trên BlackBerry 10
+
+Để ứng dụng web AnkiBerry hoạt động mượt mà và tin cậy nhất trên các thiết bị di động cổ, đặc biệt là hệ điều hành BlackBerry 10, ba cơ chế kỹ thuật tiên tiến đã được tích hợp trực tiếp vào giao diện frontend:
+
+### 1. Cơ chế lọc Ghost Click chống chạm nhầm khi vuốt cuộn (Touch Scroll Filter)
+Trên các trình duyệt WebKit cũ và phần cứng bị giới hạn (dễ gây lag) như BB10, thao tác vuốt cuộn màn hình thường bị trình duyệt hiểu lầm thành một sự kiện `click` giả lập ngay khi nhấc ngón tay lên (Ghost Click). Điều này gây ra trải nghiệm cực kỳ khó chịu khi bạn vuốt cuộn để đọc thẻ dài nhưng lại vô tình làm lật thẻ hoặc chấm điểm ngoài ý muốn.
+
+**Giải pháp**:
+- Hệ thống lắng nghe sự kiện `touchstart` để ghi nhận tọa độ chạm ban đầu.
+- Khi có sự kiện `touchmove`, nếu khoảng cách di chuyển thực tế vượt quá **8px** theo bất kỳ hướng nào, hệ thống sẽ ngay lập tức đánh dấu trạng thái cuộn màn hình (`touchIsScrolling = true`).
+- Sử dụng cơ chế bắt chặn sự kiện ở **Capture Phase** (`document.addEventListener('click', ..., true)`) để bắt và hủy bỏ ngay lập tức sự kiện `click` giả lập từ đỉnh cây DOM trước khi nó kịp truyền xuống và kích hoạt các hàm `onclick` trên các nút bấm.
+
+### 2. Phép toán DOM cuộn kép (Dual-Scrolling) và State-based Focus
+Thay vì sử dụng phương thức `element.scrollIntoView()` của HTML5 (vốn hoạt động rất kém trên các trình duyệt cũ khi có sự chồng chéo của các container `overflow: visible` và `overflow: auto`), AnkiBerry tự động tính toán vị trí pixel tuyệt đối của phần tử:
+- **Khoảng cách cuộn** = Tọa độ viewport của phần tử - Tọa độ viewport của container + lượng đã cuộn của container.
+- **Cuộn đồng thời** cả khung cuộn phụ `.app-container` (để tương thích BB10) và khung cuộn chính `window viewport` (để tương thích Laptop/Chrome).
+- Sử dụng trực tiếp **inline styles** thông qua DOM JavaScript để vẽ viền xanh dương phát sáng (`#38bdf8`) và nền xanh trời mờ, giúp hiển thị tiêu điểm rõ ràng và nổi bật với độ ưu tiên tuyệt đối so với CSS class thông thường.
+
+### 3. Tương thích Bộ gõ tiếng Việt Telex (IME Fallback)
+Khi gõ Telex tiếng Việt trên bàn phím vật lý QWERTY, việc gõ phím `D` liên tiếp sẽ bị bộ gõ IME chuyển hóa thành chữ `Đ` (keyCode 229). Để bảo vệ trải nghiệm học thẻ không bị gián đoạn, hệ thống đã đồng bộ hóa và gợi ý sử dụng cặp phím **`J/K`** làm phím điều hướng tiêu điểm chính trong Study Mode, hoàn toàn miễn nhiễm với mọi bộ gõ tiếng Việt.
+
 ## Tóm tắt thực chiến
 
 Đường đi ổn định nhất cho BlackBerry Classic:
