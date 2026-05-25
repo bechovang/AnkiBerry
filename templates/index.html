@@ -958,41 +958,31 @@
                 return;
             }
 
-            // Global d/f scrolling keys for fast tactile reading
-            if (key === 'd' || key === 'D' || keyCode === 68) {
-                var el = null;
-                if (currentScreen === 'deck') {
-                    el = document.getElementById('deck-screen');
-                } else if (currentScreen === 'study') {
-                    el = document.getElementById('study-screen');
-                }
-                if (el) {
-                    e.preventDefault();
-                    el.scrollTop += 60;
+            // Scroll helper: in study mode CSS forces overflow:visible on .screen,
+            // so body is the scroll container. In deck mode, .screen scrolls itself.
+            function scrollScreen(amount) {
+                if (currentScreen === 'study') {
+                    window.scrollBy(0, amount);
+                } else {
+                    var el = document.getElementById('deck-screen');
+                    if (el) el.scrollTop += amount;
                 }
             }
-            else if (key === 'j' || key === 'J' || keyCode === 74) {
+
+            // D / J = scroll down
+            if (key === 'd' || key === 'D' || keyCode === 68 ||
+                key === 'j' || key === 'J' || keyCode === 74) {
                 if (currentScreen === 'study') {
                     e.preventDefault();
-                    document.getElementById('study-screen').scrollTop += 60;
+                    scrollScreen(60);
                 }
             }
-            else if (key === 'f' || key === 'F' || keyCode === 70) {
-                var el = null;
-                if (currentScreen === 'deck') {
-                    el = document.getElementById('deck-screen');
-                } else if (currentScreen === 'study') {
-                    el = document.getElementById('study-screen');
-                }
-                if (el) {
-                    e.preventDefault();
-                    el.scrollTop -= 60;
-                }
-            }
-            else if (key === 'k' || key === 'K' || keyCode === 75) {
+            // F / K = scroll up
+            else if (key === 'f' || key === 'F' || keyCode === 70 ||
+                     key === 'k' || key === 'K' || keyCode === 75) {
                 if (currentScreen === 'study') {
                     e.preventDefault();
-                    document.getElementById('study-screen').scrollTop -= 60;
+                    scrollScreen(-60);
                 }
             }
 
