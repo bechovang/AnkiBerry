@@ -180,8 +180,8 @@ New-NetFirewallRule -DisplayName "AnkiWeb Flask 5000" -Direction Inbound -Action
 - `U` hoặc `2`: Hard
 - `I` hoặc `3`: Good
 - `O` hoặc `4`: Easy
-- `J` hoặc `D`: cuộn xuống
-- `K` hoặc `F`: cuộn lên
+- `D`: nhảy lên đầu trang
+- `F`: nhảy xuống cuối trang
 - `H` hoặc `Backspace`: quay lại deck list
 
 ### Màn hình hoàn thành

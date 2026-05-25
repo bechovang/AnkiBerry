@@ -669,7 +669,7 @@
                     <button id="btn-score-4" class="btn-score score-4" onclick="submitAnswer(4)">Easy <span>[ O / 4 ]</span></button>
                 </div>
 
-                <div class="hotkeys-helper">H: quay lại | J/D: xuống | K/F: lên | L: lật thẻ | Y-U-I-O: chấm điểm</div>
+                <div class="hotkeys-helper">H: quay lại | D: lên đầu | F: xuống cuối | L: lật thẻ | Y-U-I-O: chấm điểm</div>
             </div>
         </div>
 
@@ -958,31 +958,17 @@
                 return;
             }
 
-            // Scroll helper: in study mode CSS forces overflow:visible on .screen,
-            // so body is the scroll container. In deck mode, .screen scrolls itself.
-            function scrollScreen(amount) {
-                if (currentScreen === 'study') {
-                    window.scrollBy(0, amount);
-                } else {
-                    var el = document.getElementById('deck-screen');
-                    if (el) el.scrollTop += amount;
-                }
-            }
-
-            // D / J = scroll down
-            if (key === 'd' || key === 'D' || keyCode === 68 ||
-                key === 'j' || key === 'J' || keyCode === 74) {
-                if (currentScreen === 'study') {
+            // D = jump to top, F = jump to bottom of study content
+            // In study mode, .app-container is the real scroll container (overflow: auto)
+            if (currentScreen === 'study') {
+                var container = document.querySelector('.app-container');
+                if (key === 'd' || key === 'D' || keyCode === 68) {
                     e.preventDefault();
-                    scrollScreen(60);
+                    if (container) container.scrollTop = 0;
                 }
-            }
-            // F / K = scroll up
-            else if (key === 'f' || key === 'F' || keyCode === 70 ||
-                     key === 'k' || key === 'K' || keyCode === 75) {
-                if (currentScreen === 'study') {
+                else if (key === 'f' || key === 'F' || keyCode === 70) {
                     e.preventDefault();
-                    scrollScreen(-60);
+                    if (container) container.scrollTop = container.scrollHeight;
                 }
             }
 

@@ -105,8 +105,8 @@ New-NetFirewallRule -DisplayName "AnkiWeb Flask 5000" -Direction Inbound -Action
 | `U` / `2` | Hard |
 | `I` / `3` | Good |
 | `O` / `4` | Easy |
-| `J` / `D` | Cuộn xuống |
-| `K` / `F` | Cuộn lên |
+| `D` | Nhảy lên đầu trang |
+| `F` | Nhảy xuống cuối trang |
 | `H` / `Backspace` | Quay lại danh sách bộ thẻ |
 
 ## API Endpoints
