@@ -100,14 +100,14 @@ New-NetFirewallRule -DisplayName "AnkiWeb Flask 5000" -Direction Inbound -Action
 
 | Phím | Hành động |
 |---|---|
-| `Space` / `Enter` | Lật thẻ |
+| `Space` / `L` / `Enter` | Lật thẻ |
 | `Y` / `1` | Again |
 | `U` / `2` | Hard |
 | `I` / `3` | Good |
 | `O` / `4` | Easy |
 | `J` / `D` | Cuộn xuống |
 | `K` / `F` | Cuộn lên |
-| `H` / `Backspace` | Quay lại |
+| `H` / `Backspace` | Quay lại danh sách bộ thẻ |
 
 ## API Endpoints
 

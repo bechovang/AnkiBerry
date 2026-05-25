@@ -659,7 +659,7 @@
             <!-- Study Action Area -->
             <div class="action-area">
                 <!-- 1. Reveal trigger -->
-                <button id="reveal-btn" class="btn-reveal" onclick="revealAnswer()">Xem Đáp Án <span style="font-size:9px;opacity:0.75;display:block;margin-top:3px;">[ SPACE / ENTER ]</span></button>
+                <button id="reveal-btn" class="btn-reveal" onclick="revealAnswer()">Xem Đáp Án <span style="font-size:9px;opacity:0.75;display:block;margin-top:3px;">[ SPACE / L / ENTER ]</span></button>
                 
                 <!-- 2. Rate grids -->
                 <div id="score-block" class="score-grid hidden">
@@ -669,7 +669,7 @@
                     <button id="btn-score-4" class="btn-score score-4" onclick="submitAnswer(4)">Easy <span>[ O / 4 ]</span></button>
                 </div>
 
-                <div class="hotkeys-helper">Bàn phím: SPACE/ENTER lật | Y-U-I-O chấm điểm | J/K hoặc D/F để cuộn</div>
+                <div class="hotkeys-helper">H: quay lại | J/D: xuống | K/F: lên | L: lật thẻ | Y-U-I-O: chấm điểm</div>
             </div>
         </div>
 
@@ -1027,8 +1027,9 @@
             
             // 2. STUDY PANEL NAVIGATION SCREEN
             else if (currentScreen === 'study') {
-                // Space or Enter key logic: reveal answer
-                if (keyCode === 32 || key === " " || keyCode === 13 || key === "Enter") {
+                // Space / Enter / L: reveal answer (vim L = forward/next)
+                if (keyCode === 32 || key === " " || keyCode === 13 || key === "Enter" ||
+                    key === 'l' || key === 'L' || keyCode === 76) {
                     e.preventDefault();
                     if (!isAnswerRevealed) {
                         var revealBtn = document.getElementById('reveal-btn');

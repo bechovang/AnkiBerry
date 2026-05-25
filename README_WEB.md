@@ -175,7 +175,7 @@ New-NetFirewallRule -DisplayName "AnkiWeb Flask 5000" -Direction Inbound -Action
 
 ### Màn hình học thẻ
 
-- `Space` hoặc `Enter`: lật thẻ / hiện đáp án
+- `Space` hoặc `Enter` hoặc `L`: lật thẻ / hiện đáp án
 - `Y` hoặc `1`: Again
 - `U` hoặc `2`: Hard
 - `I` hoặc `3`: Good
